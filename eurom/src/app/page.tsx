@@ -5,11 +5,9 @@ import { useState } from "react";
 export default function Home() {
   const [numbersInput, setNumbersInput] = useState(""); // État pour stocker l'entrée des 5 numéros.
   const [starsInput, setstarsInput] = useState(""); // État pour stocker l'entrée des 2 numéros supplémentaires.
-  const [numbers, setNumbers] = useState<number[]>([]); // État pour stocker les 5 numéros après validation.
-  const [stars, setstars] = useState<number[]>([]); // État pour stocker les 2 numéros supplémentaires après validation.
-
+ 
   // Gestion de l'entrée des 5 numéros
-  const handleNumbersInputChange = (e: any) => {
+  const handleNumbersInputChange = (e:any) => {
     setNumbersInput(e.target.value); // Mise à jour de l'état avec la valeur entrée.
   };
 
