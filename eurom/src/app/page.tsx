@@ -29,7 +29,7 @@ export default function Home() {
       setNumbers(numbersArray); // Mise à jour de l'état des 5 numéros validés.
       setstars(starsArray); // Mise à jour de l'état des 2 numéros supplémentaires validés.
 
-      console.log(numbersArray, starsArray); // Affichage des numéros dans la console.
+      console.log(numbersArray, starsArray); 
     } else {
       alert("Veuillez entrer exactement 5 numéros et 2 numéros supplémentaires, séparés par des espaces."); // Alerte si la validation échoue.
     }
