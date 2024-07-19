@@ -7,12 +7,12 @@ export default function Home() {
   const [starsInput, setstarsInput] = useState(""); // État pour stocker l'entrée des 2 numéros supplémentaires.
  
   // Gestion de l'entrée des 5 numéros
-  const handleNumbersInputChange = (e:any) => {
+  const handleNumbersInputChange = (e: React.ChangeEvent<HTMLInputElement> ) => {
     setNumbersInput(e.target.value); // Mise à jour de l'état avec la valeur entrée.
   };
 
   // Gestion de l'entrée des 2 numéros supplémentaires
-  const handlestarsInputChange = (e: any) => {
+  const handlestarsInputChange = (e : React.ChangeEvent<HTMLInputElement>) => {
     setstarsInput(e.target.value); // Mise à jour de l'état avec la valeur entrée.
   };
 
