@@ -3,35 +3,55 @@
 import { useState } from "react";
 
 export default function Home() {
-  const [numbersInput, setNumbersInput] = useState(""); // État pour stocker l'entrée des 5 numéros.
-  const [starsInput, setstarsInput] = useState(""); // État pour stocker l'entrée des 2 numéros supplémentaires.
-  const [numbers, setNumbers] = useState<number[]>([]); // État pour stocker les 5 numéros après validation.
-  const [stars, setstars] = useState<number[]>([]); // État pour stocker les 2 numéros supplémentaires après validation.
+  const [numbersInput, setNumbersInput] = useState("");
+  const [extraNumbersInput, setExtraNumbersInput] = useState("");
+  const [result, setResult] = useState<{ numbers: number; stars: number } | null>(null);
+  const [drawNumbers, setDrawNumbers] = useState<number[]>([]);
+  const [drawStars, setDrawStars] = useState<number[]>([]);
 
-  // Gestion de l'entrée des 5 numéros
-  const handleNumbersInputChange = (e: React.ChangeEvent<HTMLInputElement> ) => {
+  const handleNumbersInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNumbersInput(e.target.value); // Mise à jour de l'état avec la valeur entrée.
   };
 
-  // Gestion de l'entrée des 2 numéros supplémentaires
-  const handlestarsInputChange = (e : React.ChangeEvent<HTMLInputElement>) => {
-    setstarsInput(e.target.value); // Mise à jour de l'état avec la valeur entrée.
+  const handleExtraNumbersInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setExtraNumbersInput(e.target.value); // Mise à jour de l'état avec la valeur entrée.
   };
 
-   // Gestion du clic sur le bouton "Afficher les numéros"
-   const handleSubmit = () => {
-    // Division des entrées en utilisant les espaces comme séparateurs et conversion en nombres
+  const handleSubmit = async () => {
     const numbersArray = numbersInput.split(" ").map(Number);
-    const starsArray = starsInput.split(" ").map(Number);
+    const extraNumbersArray = extraNumbersInput.split(" ").map(Number);
 
-    // Validation pour s'assurer que 5 numéros et 2 numéros supplémentaires ont été saisis
-    if (numbersArray.length === 5 && starsArray.length === 2) {
-      setNumbers(numbersArray); // Mise à jour de l'état des 5 numéros validés.
-      setstars(starsArray); // Mise à jour de l'état des 2 numéros supplémentaires validés.
+    if (numbersArray.length === 5 && extraNumbersArray.length === 2) {
+      try {
+        const response = await fetch('/api/lottery', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            numbers: numbersArray,
+            extraNumbers: extraNumbersArray,
+          }),
+        });
 
-      console.log(numbersArray, starsArray); 
+        // Vérifier si la réponse est JSON
+        if (response.ok) {
+          const data = await response.json();
+          setResult({
+            numbers: data.numbers,
+            stars: data.stars
+          }); // Stocker le résultat du tirage
+          setDrawNumbers(data.drawNumbers); // Stocker les numéros tirés
+          setDrawStars(data.drawStars); // Stocker les étoiles tirées
+        } else {
+          console.error('Erreur de réponse:', await response.text());
+          alert('Une erreur est survenue. Veuillez réessayer.');
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+      }
     } else {
-      alert("Veuillez entrer exactement 5 numéros et 2 numéros supplémentaires, séparés par des espaces."); // Alerte si la validation échoue.
+      alert("Veuillez entrer exactement 5 numéros et 2 numéros supplémentaires, séparés par des espaces.");
     }
   };
 
@@ -42,15 +62,15 @@ export default function Home() {
           type="text"
           value={numbersInput}
           onChange={handleNumbersInputChange}
-          className="mr-24 p-2 border border-gray-300 rounded"
-          placeholder="5 numéros, séparés par des espaces"
+          className="mr-24 p-2 border border-gray-300 rounded bg-white text-black"
+          placeholder="Entrez 5 numéros, séparés par des espaces"
         />
         <input
           type="text"
-          value={starsInput}
-          onChange={handlestarsInputChange}
-          className="p-2 border border-gray-300 rounded"
-          placeholder="2 numéros supplémentaires, séparés par des espaces"
+          value={extraNumbersInput}
+          onChange={handleExtraNumbersInputChange}
+          className="p-2 border border-gray-300 rounded bg-white text-black"
+          placeholder="Entrez 2 numéros supplémentaires, séparés par des espaces"
         />
       </div>
       <button
@@ -59,7 +79,17 @@ export default function Home() {
       >
         Jouer
       </button>
-      
+      <div className="mt-8">
+        {/* Affichage du résultat */}
+        {result && (
+          <div>
+            <p>Vous avez obtenu {result.numbers} bons numéros et {result.stars} bonnes étoiles</p>
+            {/* Affichage des numéros tirés */}
+            <p>Numéros tirés : {drawNumbers.join(", ")}</p>
+            <p>Étoiles tirées : {drawStars.join(", ")}</p>
+          </div>
+        )}
+      </div>
     </main>
   );
 }
